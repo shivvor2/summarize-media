@@ -1,0 +1,9 @@
+# Obtain Media
+pytube
+bilix
+
+# LLM related
+openai
+instructor
+
+# post processing
