@@ -60,7 +60,7 @@ def get_transcription(file_path: str,
         return result["segments"]
     
     # See original code for [Diarization pipeline](https://github.com/m-bain/whisperX/blob/main/whisperx/diarize.py#L10)
-    diarization_model_name = diarization_model_name if diarization_model_name is not None else "pyannote/speaker-diarization-3.1"
+    diarization_model_name = diarization_model_name if diarization_model_name else "pyannote/speaker-diarization-3.1"
     diarize_model = whisperx.DiarizationPipeline(use_auth_token=os.getenv("HF_TOKEN"), device=device, model_name = diarization_model_name)
     diarize_segments = diarize_model(audio, min_speakers = min_speakers, max_speakers = max_speakers)
     

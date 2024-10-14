@@ -17,6 +17,7 @@ git+https://github.com/m-bain/whisperx.git #whisperX
 
 # LLM related
 openai
+groq
 instructor
 
 # post processing
