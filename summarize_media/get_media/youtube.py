@@ -25,12 +25,15 @@ def get_youtube(
         str: File path of the downloaded file
 
     """
+    youtube_args = youtube_args or dict()
+    dl_args = dl_args or dict()
+
     # Set up function to show progress bar if verbose
     on_progress_fn = on_progress if verbose else None
 
     # Attempt to get video from url
     try:
-        yt = YouTube(url, on_progress=on_progress_fn, **youtube_args)
+        yt = YouTube(url, on_progress_callback=on_progress_fn, **youtube_args)
     except VideoUnavailable:
         raise ValueError(
             f"Cannot obtain media from {url}, please check if url is valid"
@@ -66,5 +69,5 @@ def show_info(yt: YouTube, date_format: str = "%d/%m/%y %H:%M:%S"):
         date_format: String to formate the date output, please refer to [datetime_documentation](https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior)
     """
     print(f"Title: {yt.title}")
-    print(f"Upload date: {yt.publish_date.strftime(str)}")
+    print(f"Upload date: {yt.publish_date.strftime(date_format)}")
     print(f"Time length: {str(datetime.timedelta(seconds=yt.length))}")

@@ -1,3 +1,6 @@
+# media data (testing)
+data/
+
 # Jupyter notebooks (on root folder), they are for exploration only
 test.ipynb
 

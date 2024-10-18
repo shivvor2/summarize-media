@@ -10,6 +10,7 @@ models = {
 }
 
 
+# Input must be a .wav file
 def get_transcribe_cloud(
     file_path: str,
     model_name: Literal["medium", "large-v2", "large-v3"] = "large-v2",
@@ -22,7 +23,7 @@ def get_transcribe_cloud(
     Providing an invalid argument will likely result in an error
 
     Args:
-        file_path (str): relative path to the locally stored file
+        file_path (str): relative path to the locally stored .wav file
         model (str): Choose which model to use, must be one of "medium", "large-v2" and "large-v3", defaults to "large-v2"
         kwargs: Refer to each model's schema page
 
