@@ -16,42 +16,44 @@ import shutil
 from typing import Optional, Dict
 from time import time
 
-# Reusable global instance, 
+# Reusable global instance,
 bili = DownloaderBilibili()
+
 
 # TODO: Doc string
 # TODO: set up collision stratergies (rename, replace, )
-def get_bilibili(url: str, output_path: str, verbose = True, bili_args: Optional[Dict] = None):
-    
+def get_bilibili(
+    url: str, output_path: str, verbose=True, bili_args: Optional[Dict] = None
+):
     temp_output_path = os.path.join(output_path, get_random_name())
-    
+
     os.makedirs(temp_output_path)
-    
+
     # Downloads the video
-    asyncio.run(download_from_bilibili(url = url, output_path=temp_output_path, bili_args = bili_args))
-    
-    file_name_test = os.listdir(temp_output_path)[0] # only 1 object in the temp folder
-    
+    asyncio.run(
+        download_from_bilibili(
+            url=url, output_path=temp_output_path, bili_args=bili_args
+        )
+    )
+
+    file_name_test = os.listdir(temp_output_path)[0]  # only 1 object in the temp folder
+
     file_name_dest = str(file_name_test)
-    
+
     while os.path.exists(os.path.join(output_path, file_name_dest)):
         base_name, extension = os.path.splitext(file_name_dest)
         file_name_dest = base_name + " - copy" + extension
-    
+
     file_path_temp = os.path.join(temp_output_path, file_name_test)
     file_path_dest = os.path.join(output_path, file_name_dest)
-    
-    shutil.move(file_path_temp, file_path_dest)
-    
-    
 
-    
-    
-    
+    shutil.move(file_path_temp, file_path_dest)
+
 
 async def download_from_bilibili(url: str, output_path: str, bili_args):
-    await bili.get_video(url = url, path = output_path, only_audio = True, **bili_args)
+    await bili.get_video(url=url, path=output_path, only_audio=True, **bili_args)
     return
+
 
 def get_random_name(prefix: str = "temp", name_length: int = 32):
     """Creates a psudo random name consisting of a prefix and a hex string of specified length
@@ -63,6 +65,5 @@ def get_random_name(prefix: str = "temp", name_length: int = 32):
     Returns:
         str: A randomized name
     """
-    
-    return "_".join((prefix, str(int(time())), os.urandom(name_length/2).hex()))
-    
+
+    return "_".join((prefix, str(int(time())), os.urandom(name_length / 2).hex()))
