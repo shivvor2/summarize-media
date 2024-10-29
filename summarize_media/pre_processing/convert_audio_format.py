@@ -31,7 +31,7 @@ def convert_to_wav(
     audio_codec: str = "pcm_s16le",
     overwrite: bool = True,
 ) -> str:
-    """_summary_
+    """Converts the provided audio file to .wav format
 
     Args:
         input_path (str): Path of the input file
@@ -148,6 +148,8 @@ def convert_ffmpeg(
         audio_codec,  # Audio codec
         "-ar",
         str(sample_rate),  # Sample rate
+        "-af",
+        "aresample=resampler=soxr",
         *(["-y"] if overwrite else ["-n"]),  # Overwrite output file if exists
         output_path,
     ]

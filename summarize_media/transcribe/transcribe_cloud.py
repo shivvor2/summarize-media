@@ -2,6 +2,11 @@
 
 from typing import Literal, Any
 import replicate
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 models = {
     "medium": "carnifexer/whisperx:1e0315854645f245d04ff09f5442778e97b8588243c7fe40c644806bde297e04",
@@ -14,6 +19,7 @@ models = {
 def get_transcribe_cloud(
     file_path: str,
     model_name: Literal["medium", "large-v2", "large-v3"] = "large-v2",
+    debug: bool = False,
     **kwargs: Any,
 ) -> Any:
     """Transcribes an audio file via replicate (cloud service)
@@ -25,15 +31,25 @@ def get_transcribe_cloud(
     Args:
         file_path (str): relative path to the locally stored .wav file
         model (str): Choose which model to use, must be one of "medium", "large-v2" and "large-v3", defaults to "large-v2"
+        debug (bool): If True, enable logging output. Defaults to False
         kwargs: Refer to each model's schema page
 
     returns:
         A dictionary containing transcribed audio and sentence level timestamps
     """
+    logger.setLevel(logging.INFO if debug else logging.WARNING)
+
     audio_key = "audio_path" if model_name == "large-v3" else "audio"
     audio = open(file_path, "rb")
-    inputs = {audio_key: audio} | kwargs
+    input = {audio_key: audio} | kwargs
 
-    output = replicate.run(models[model_name], inputs=inputs)
+    # Log the inputs dictionary
+    logger.info(f"Model: {model_name}")
+    logger.info("Inputs:")
+    logger.info(f" {audio_key}: <file: {file_path}>")
+    for key, value in kwargs.items():
+        logger.info(f"  {key}: {value}")
+
+    output = replicate.run(models[model_name], input=input)
 
     return output
