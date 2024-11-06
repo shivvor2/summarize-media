@@ -1,8 +1,15 @@
 # media data (testing)
 data/
+model/
 
 # Jupyter notebooks (on root folder), they are for exploration only
 test.ipynb
+test2.ipynb
+test3.ipynb
+test_final.ipynb
+
+# Ruff Cache
+.ruff_cache/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

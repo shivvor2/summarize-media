@@ -9,7 +9,11 @@ python-dotenv
 pytube
 bilix
 
+# file hosting (circumvent replicate file size probnlem)
+boto3
+
 # Transcription
+httpx # Needed for dealing with time out issues
 replicate # Online transcription
 
 # Local transcription

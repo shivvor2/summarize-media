@@ -1,8 +1,12 @@
 """Transcribe input media (e.g. podcasts) via cloud service e.g. replicate"""
 
-from typing import Literal, Any
-import replicate
 import logging
+import os
+from typing import Any, Literal
+
+import httpx
+from _io import BufferedReader
+from replicate.client import Client
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -14,12 +18,21 @@ models = {
     "large-v3": "victor-upmeet/whisperx:84d2ad2d6194fe98a17d2b60bef1c7f910c46b2f6fd38996ca457afd9c8abfcb",
 }
 
+default_timeout = httpx.Timeout(
+    10080.0,  # default timeout
+    read=10080.0,  # 10 minutes read timeout
+    write=600.0,  # write timeout
+    connect=600.0,  # connect timeout
+    pool=600.0,  # pool timeout
+)
+
 
 # Input must be a .wav file
 def get_transcribe_cloud(
-    file_path: str,
+    audio: str | BufferedReader,
     model_name: Literal["medium", "large-v2", "large-v3"] = "large-v2",
     debug: bool = False,
+    timeout: httpx.Timeout = None,
     **kwargs: Any,
 ) -> Any:
     """Transcribes an audio file via replicate (cloud service)
@@ -29,27 +42,35 @@ def get_transcribe_cloud(
     Providing an invalid argument will likely result in an error
 
     Args:
-        file_path (str): relative path to the locally stored .wav file
+        audio (str | BufferedReader): The target audio file to transcribe, can either provide a local file e.g. ( audio_obj = open(audio_path, "rb") ) or the url to the audio
         model (str): Choose which model to use, must be one of "medium", "large-v2" and "large-v3", defaults to "large-v2"
         debug (bool): If True, enable logging output. Defaults to False
+        timeout (httpx.Timeout): Timeout settings for the replicate service
         kwargs: Refer to each model's schema page
 
     returns:
         A dictionary containing transcribed audio and sentence level timestamps
     """
+    timeout = timeout if timeout is not None else default_timeout
+
+    rep_client = Client(timeout=timeout, api_token=os.getenv("REPLICATE_API_TOKEN"))
+
     logger.setLevel(logging.INFO if debug else logging.WARNING)
 
     audio_key = "audio_path" if model_name == "large-v3" else "audio"
-    audio = open(file_path, "rb")
+
+    # audio = open(file_path, "rb") if file_path else url
+    # input = {audio_key: audio} | kwargs
+
     input = {audio_key: audio} | kwargs
 
     # Log the inputs dictionary
     logger.info(f"Model: {model_name}")
     logger.info("Inputs:")
-    logger.info(f" {audio_key}: <file: {file_path}>")
+    logger.info(f" {audio_key}: {audio}")
     for key, value in kwargs.items():
         logger.info(f"  {key}: {value}")
 
-    output = replicate.run(models[model_name], input=input)
+    output = rep_client.run(models[model_name], input=input)
 
     return output

@@ -1,11 +1,11 @@
 """Transcribes audio files locally"""
 
-import whisperx
 import gc
-import torch
 import os
-
 from typing import Literal, Union
+
+import torch
+import whisperx
 
 
 def get_transcription(
@@ -33,6 +33,7 @@ def get_transcription(
         diarization_model_name (str, optional): Custom diarization model to be used, by default, "[pyannote/speaker-diarization-3.1](https://huggingface.co/pyannote/speaker-diarization-3.1)" is used
         min_speakers (int, optional), Specifies the minimum speakers present in the audio, leave blank if unknown
         max_speakers (int, optional), Specifies the maximum speakers present in the audio, leave blank if unknown
+        hugging_face_token: (str, optional), huggingface token for model access.
         model_save_dir (str, optional): Local path to save the downloaded whisper model to.
         delete_model (bool, optional): whether to delete the model from memory after running that section, defaults to true.
 
@@ -77,8 +78,10 @@ def get_transcription(
         if diarization_model_name
         else "pyannote/speaker-diarization-3.1"
     )
+
+    auth_token = hugging_face_token or os.getenv("HF_TOKEN")
     diarize_model = whisperx.DiarizationPipeline(
-        use_auth_token=os.getenv("HF_TOKEN"),
+        use_auth_token=auth_token,
         device=device,
         model_name=diarization_model_name,
     )
