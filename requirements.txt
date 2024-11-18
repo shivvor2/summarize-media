@@ -17,8 +17,8 @@ httpx # Needed for dealing with time out issues
 replicate # Online transcription
 
 # Local transcription
-torch
-torchaudio
+torch==2.0.0
+torchaudio==2.0.0
 # pytorch-cuda
 git+https://github.com/m-bain/whisperx.git #whisperX
 
@@ -27,4 +27,5 @@ openai
 groq
 instructor
 
-# post processing
+# LLM inference
+openai

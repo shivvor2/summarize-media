@@ -1,5 +1,6 @@
 # "Normal" text response
-from typing import List, Union, Dict, Any
+from typing import Any, Dict, List, Union
+
 from groq import Groq
 from openai import OpenAI
 from ratelimit import limits, sleep_and_retry
@@ -10,7 +11,7 @@ from ratelimit import limits, sleep_and_retry
 def get_response(
     messages: List[dict],
     client: Union[Groq, OpenAI],
-    client_args: Dict[Any],
+    client_args: Dict[str, Any],
     kept_keys: List[str] = None,
     discard_keys: List[str] = None,
     **kwargs,

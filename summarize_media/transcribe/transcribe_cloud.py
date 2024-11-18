@@ -1,12 +1,11 @@
 """Transcribe input media (e.g. podcasts) via cloud service e.g. replicate"""
 
 import logging
-import os
 from typing import Any, Literal
 
 import httpx
+import replicate
 from _io import BufferedReader
-from replicate.client import Client
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -19,18 +18,18 @@ models = {
 }
 
 default_timeout = httpx.Timeout(
-    10080.0,  # default timeout
-    read=10080.0,  # 10 minutes read timeout
-    write=600.0,  # write timeout
-    connect=600.0,  # connect timeout
-    pool=600.0,  # pool timeout
+    20160.0,  # default timeout
+    read=20160.0,  # 20 minutes read timeout
+    write=1200.0,  # write timeout
+    connect=1200.0,  # connect timeout
+    pool=1200.0,  # pool timeout
 )
 
 
 # Input must be a .wav file
 def get_transcribe_cloud(
     audio: str | BufferedReader,
-    model_name: Literal["medium", "large-v2", "large-v3"] = "large-v2",
+    model_name: Literal["medium", "large-v2", "large-v3"] = "large-v3",
     debug: bool = False,
     timeout: httpx.Timeout = None,
     **kwargs: Any,
@@ -53,11 +52,9 @@ def get_transcribe_cloud(
     """
     timeout = timeout if timeout is not None else default_timeout
 
-    rep_client = Client(timeout=timeout, api_token=os.getenv("REPLICATE_API_TOKEN"))
-
     logger.setLevel(logging.INFO if debug else logging.WARNING)
 
-    audio_key = "audio_path" if model_name == "large-v3" else "audio"
+    audio_key = "audio_file" if model_name == "large-v3" else "audio"
 
     # audio = open(file_path, "rb") if file_path else url
     # input = {audio_key: audio} | kwargs
@@ -71,6 +68,6 @@ def get_transcribe_cloud(
     for key, value in kwargs.items():
         logger.info(f"  {key}: {value}")
 
-    output = rep_client.run(models[model_name], input=input)
+    output = replicate.run(models[model_name], input=input)
 
     return output
