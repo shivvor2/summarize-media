@@ -1,3 +1,6 @@
+# gradio
+.gradio/
+
 # media data (testing)
 data/
 model/
